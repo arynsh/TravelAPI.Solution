@@ -70,3 +70,11 @@ namespace TravelApi
 
 // Swagger Docs
 // https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=netcore-cli
+
+// JSON 
+// http://localhost:5000/swagger/v1/swagger.json
+
+// http://localhost:5000/swagger/index.html
+
+
+

@@ -24,19 +24,32 @@ namespace TravelApi
         }
 
         public IConfiguration Configuration { get; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins"; // CORS
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<TravelApiContext>(opt =>
                opt.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
+
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins("https://localhost:5000",  // ------------------------------- UPDATE ------------------------------------
+                                    "http://www.notSureWhatThisIs.com"); // Note: The URL must not contain a trailing slash (/).
+                });
+            });
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,7 +75,10 @@ namespace TravelApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            // app.UseHttpsRedirection();
+            app.UseCors(MyAllowSpecificOrigins); // Note: UseCors must be called before UseMvc.
+
+            // app.UseHttpsRedirection(); // Comment out ?
+
             app.UseMvc();
         }
     }
@@ -70,3 +86,11 @@ namespace TravelApi
 
 // Swagger Docs
 // https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=netcore-cli
+
+// JSON 
+// http://localhost:5000/swagger/v1/swagger.json
+
+// http://localhost:5000/swagger/index.html
+
+// CORS (Using CORS with Razor, etc...)
+// https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-2.2
